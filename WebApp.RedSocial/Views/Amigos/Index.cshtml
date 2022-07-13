@@ -1,0 +1,120 @@
+﻿@using RedSocial.Core.Application.ViewModels.User;
+@using RedSocial.Core.Application.ViewModels.Comentario;
+@using RedSocial.Application.ViewModels.Amigos;
+@using RedSocial.Application.ViewModels.Publicacion;
+@using Microsoft.AspNetCore.Http;
+@using RedSocial.Core.Application.Helpers;
+@model SaveAmigosViewModel;
+@inject IHttpContextAccessor httpContext;
+@{
+    UserViewModel user = httpContext.HttpContext.Session.Get<UserViewModel>("user");
+}
+
+
+<div class="row">
+    <div class="col-md-3">
+        <!-- Button trigger modal -->
+
+        <div class="row">
+            <div class="col-md-12">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    Agregar Amigo
+                </button>
+            </div>
+            <div class="col-md-12">
+                <br />
+                <h4>Amigos</h4>
+                <table class="table">
+                    <tbody>
+                        @foreach (AmigosViewModel item in ViewBag.Amigos)
+                        {
+                            <tr>
+                                <td>@item.NombreAmigo</td>
+                                <td>@item.ApellidoAmigo</td>
+                                <td><a asp-controller="Amigos" asp-action="Delete" asp-route-id="@item.IdAmigo" class="btn btn-outline-danger float-right">Borrar</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Buscar Amigo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <form method="post" asp-controller="Amigos" asp-action="Create">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label asp-for="NombreAmigo" class="form-label">Nombre de amigo: </label>
+                                <input type="text" asp-for="NombreAmigo" class="form-control" />
+                                <span asp-validation-for="NombreAmigo" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Buscar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="row">
+            @foreach (PublicacionViewModel item in ViewBag.Publicaciones)
+            {
+                <div class="col-md-12 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width:50px"> <img src="@item.FotoUsuario" class="card-img-top" alt="..." style="width: 42px;height:50px; border-radius: 100%;"> </td>
+                                    <td><strong>@item.NombreUsuario</strong>     </td>
+                                    <td style="text-align: end;">@item.Fecha.ToString("yyyy/MM/dd h:mm tt")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        @if (item.Imagen != null)
+                        {
+                            <div class="card-body pb-0" style="text-align: center;">
+                                <img src="@item.Imagen" class="card-img-top" alt="..." style="width:200px">
+                            </div>
+                        }
+                        <div class="card-body">
+                            <p class="card-text">@item.Detalle</p>
+                            <hr />
+                            <table style="width:100%">
+                                @foreach (ComentarioViewModel comentario in item.Comentarios)
+                                {
+                                    <tr>
+                                        <td style="width:50px"> <img src="@comentario.User.Foto" class="card-img-top" alt="..." style="width: 42px;height:50px; border-radius: 100%;"> </td>
+                                        <td><strong>@comentario.User.NombreUsuario</strong></td>
+                                        <td>@comentario.Detalle</td>
+                                        <td style="text-align: end;">@comentario.Fecha.ToString("yyyy/MM/dd h:mm tt")</td>
+                                    </tr>
+                                }
+                            </table>
+                            <hr />
+                            <form method="post" asp-controller="Amigos" asp-action="Comentar">
+                                <div class="input-group">
+                                    <span class="input-group-text">Agregar Comentario</span>
+                                    <input class="form-control" asp-for="Comentario" aria-label="With textarea" />
+                                    <input type="hidden" class="form-control" asp-for="IdPublicacion" value="@item.Id" />
+                                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enviar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

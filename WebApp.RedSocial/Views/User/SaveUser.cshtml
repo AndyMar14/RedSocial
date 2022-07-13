@@ -1,0 +1,88 @@
+﻿@using RedSocial.Core.Application.ViewModels.User;
+@model SaveUserViewModel;
+@{
+    bool editMode = Model.Id == 0 ? false : true;
+    ViewData["Title"] = "Guardar Usuario";
+}
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-6 offset-3">
+            <div class="card">
+                @if (ViewBag.Existe)
+                {
+                    <div class="card-header bg-warning text-light">
+                        <h4>El Nombre de Usuario ya existe</h4>
+
+                    </div>
+                }
+                <div class="card-header bg-dark text-light">
+                    <h4>@(editMode ? $"Editando El usuario: {Model.Nombre}" : "Creando un nuevo usuario")</h4>
+
+                </div>
+                <div class="card-body">
+
+                    <form method="post" enctype="multipart/form-data" asp-controller="User" asp-action="@(editMode ? "Edit":"Create")">
+                        <div class="mb-3">
+                            <label asp-for="FileFoto" class="form-label">Foto de Perfil: </label>
+                            @if (editMode)
+                            {
+                                <input asp-for="FileFoto" class="form-control" />
+                            }
+                            else
+                            {
+                                <input asp-for="FileFoto" class="form-control" required />
+                            }
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label">Nombre: </label>
+                            <input type="text" asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Apellido" class="form-label">Nombre: </label>
+                            <input type="text" asp-for="Apellido" class="form-control" />
+                            <span asp-validation-for="Apellido" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Correo" class="form-label">Correo: </label>
+                            <input type="text" asp-for="Correo" class="form-control" />
+                            <span asp-validation-for="Correo" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Telefono" class="form-label">Telefono: </label>
+                            <input type="text" asp-for="Telefono" class="form-control" />
+                            <span asp-validation-for="Telefono" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NombreUsuario" class="form-label">Nombre Usuario: </label>
+                            <input type="text" asp-for="NombreUsuario" class="form-control" />
+                            <span asp-validation-for="NombreUsuario" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">clave: </label>
+                            <input type="password" asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label">clave: </label>
+                            <input type="password" asp-for="ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a asp-controller="User" asp-action="Index" class="btn btn-warning">Volver atras</a>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+

@@ -1,0 +1,85 @@
+﻿@using RedSocial.Core.Application.ViewModels.User;
+@using RedSocial.Core.Application.ViewModels.Comentario;
+@using RedSocial.Application.ViewModels.Publicacion;
+@using Microsoft.AspNetCore.Http;
+@using RedSocial.Core.Application.Helpers;
+@model SavePublicacionViewModel;
+@inject IHttpContextAccessor httpContext;
+@{
+    bool editMode = Model.Id == 0 ? false : true;
+    UserViewModel user = httpContext.HttpContext.Session.Get<UserViewModel>("user");
+}
+
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-12">
+                <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="@(editMode ? "Edit":"Create")">
+                    <div class="mb-3">
+                        <input asp-for="FileImagen" class="form-control" />
+                        <textarea asp-for="Detalle" class="form-control" placeholder="Que estas Pensando, @user.Nombre?"></textarea>
+                        <span asp-validation-for="Detalle" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-primary float-right">Publicar</button>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (PublicacionViewModel item in ViewBag.Publicaciones)
+            {
+                <div class="col-md-12 mb-3">
+                    <div class="card">
+                        <div class="card-header" style=" display: flex; justify-content: space-between; ">
+                            <table style="width:100%">
+                                <tr>
+                                    <td style="width:50px"> <img src="@user.Foto" class="card-img-top" alt="..." style="width: 42px;height:50px; border-radius: 100%;"> </td>
+                                    <td class="font-weight-bold">@user.NombreUsuario</td>
+                                    <td style="text-align: end;">@item.Fecha.ToString("yyyy/MM/dd h:mm tt")</td>
+                                </tr>
+                            </table>
+                            <div class="btn-group" role="group" aria-label="Basic example" style="height: 34px; margin-top: 10px;">
+                                <a asp-controller="Home" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger float-right">Borrar</a>
+                                <a asp-controller="Home" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary float-right">Editar</a>
+                            </div>
+                            
+                        </div>
+                        @if (item.Imagen != null)
+                        {
+                            <div class="card-body pb-0" style="text-align: center;">
+                                <img src="@item.Imagen" class="card-img-top" alt="..." style="width:200px">
+                            </div>
+                        }
+                    <div class="card-body">
+                        <p class="card-text">@item.Detalle</p>
+                        <hr />
+                        <table style="width:100%">
+                            @foreach (ComentarioViewModel comentario in item.Comentarios)
+                            {
+                                <tr>
+                                    <td style="width:50px"> <img src="@comentario.User.Foto" class="card-img-top" alt="..." style="width: 42px;height:50px; border-radius: 100%;"> </td>
+                                    <td><strong>@comentario.User.NombreUsuario</strong></td>
+                                    <td>@comentario.Detalle</td>
+                                    <td style="text-align: end;">@comentario.Fecha.ToString("yyyy/MM/dd h:mm tt")</td>
+                                </tr>
+                            }
+                        </table>
+                        <hr />
+                        <form method="post" asp-controller="Home" asp-action="Comentar">
+                            <div class="input-group">
+                                <span class="input-group-text">Agregar Comentario</span>
+                                <input class="form-control" asp-for="Comentario" aria-label="With textarea" />
+                                <input type="hidden" class="form-control" asp-for="IdPublicacion" value="@item.Id" />
+                                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Enviar</button>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-md-2"></div>
+</div>
